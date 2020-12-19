@@ -86,9 +86,13 @@ resource "aws_security_group_rule" "allow_all_outbound" {
 }
 
 # Use this data set to replace embedded bash scripts such as user_data with scripts that sit on different source.
-/*data "template_file" "user_data" {
+data "template_file" "user_data" {
   template = file("${path.module}/user-data.ps1")
-}*/
+
+  vars = {
+      computer_name = var.rdgw_name
+  }  
+}
 
 resource "aws_instance" "rdgw" {
   ami           = data.aws_ami.windows2019.id
@@ -105,7 +109,7 @@ resource "aws_instance" "rdgw" {
     encrypted   = "true"
   }
 
-  #user_data = data.template_file.user_data.rendered
+  user_data = data.template_file.user_data.rendered
 
   #iam_instance_profile = local.iam_instance_profile
 

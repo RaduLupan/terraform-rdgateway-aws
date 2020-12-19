@@ -100,7 +100,7 @@ resource "aws_instance" "rdgw" {
   security_groups = [aws_security_group.main.id]
 
   root_block_device {
-    volume_type = "gp2"
+    volume_type = "gp3"
     volume_size = "150"
     encrypted   = "true"
   }
@@ -116,3 +116,13 @@ resource "aws_instance" "rdgw" {
   }
 }
 
+# Elastic IP.
+resource "aws_eip" "main" {
+  vpc = true
+}
+
+# Elastic IP association.
+resource "aws_eip_association" "main" {
+  instance_id   = aws_instance.rdgw.id
+  allocation_id = aws_eip.main.id
+}

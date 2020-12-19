@@ -7,9 +7,9 @@ variable "region" {
   type        = string
 }
 
-variable "key_pair_name" {
-    description = "The name of the key pair that allows to securely connect to the instance after launch"
-    type        = string
+variable "key_name" {
+  description = "The name of the key pair that allows to securely connect to the instance after launch"
+  type        = string
 }
 
 variable "ad_dns_ips" {
@@ -27,6 +27,11 @@ variable "ad_domain_fqdn" {
   type        = string
 }
 
+variable "public_subnet_id" {
+  description = "The  ID of a public subnet in the VPC where the RD Gateway will be deployed"
+  type        = string
+}
+
 #---------------------------------------------------------------
 # OPTIONAL PARAMETERS: These parameters have resonable defaults.
 #---------------------------------------------------------------
@@ -38,19 +43,19 @@ variable "environment" {
 }
 
 variable "rdgw_instance_type" {
-    description = "The EC2 instance type for the RD Gateway"
-    type        = string
-    default     = "t3.large"
+  description = "The EC2 instance type for the RD Gateway"
+  type        = string
+  default     = "t3.large"
 }
 
 variable "rdgw_allowed_cidr" {
-    description = "The allowed CIDR IP range for RDP access to the RD Gateway"
-    type        = string
-    default     = null
+  description = "The allowed CIDR IP range for RDP access to the RD Gateway"
+  type        = string
+  default     = null
 }
 
 variable "rdgw_name" {
-    description = "The name of the RD Gateway instance"
-    type        = string
-    default     = "rdgw01"
+  description = "The name of the RD Gateway instance"
+  type        = string
+  default     = "rdgw01"
 }

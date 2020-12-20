@@ -94,6 +94,77 @@ data "template_file" "user_data" {
   }  
 }
 
+# IAM instance profile.
+resource "aws_iam_instance_profile" "main" {
+  name = "${var.rdgw_name}-profile"
+  role = aws_iam_role.main.name
+}
+
+# IAM instance role
+resource "aws_iam_role" "main" {
+  name = "${var.rdgw_name}-role"
+  path = "/"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+               "Service": "ec2.amazonaws.com"
+            },
+            "Effect": "Allow",
+            "Sid": ""
+        }
+    ]
+}
+EOF
+
+  tags = local.common_tags
+}
+
+# IAM instance policy
+resource "aws_iam_role_policy" "main" {
+  name = "${var.rdgw_name}-policy"
+  role = aws_iam_role.main.id
+
+  policy = <<-EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "SSMAccess",
+        "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
+        "Sid": "S3Access",
+        "Action": [
+          "s3:GetObject"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
+        "Sid": "SQSAccess",
+        "Action": [
+          "sqs:DeleteMessage",
+          "sqs:ReceiveMessage"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      }
+    ]
+  }
+  EOF
+}
+
+
 resource "aws_instance" "rdgw" {
   ami           = data.aws_ami.windows2019.id
   instance_type = var.rdgw_instance_type
@@ -111,7 +182,7 @@ resource "aws_instance" "rdgw" {
 
   user_data = data.template_file.user_data.rendered
 
-  #iam_instance_profile = local.iam_instance_profile
+  iam_instance_profile = aws_iam_instance_profile.main.name
 
   tags = {
     Name        = var.rdgw_name

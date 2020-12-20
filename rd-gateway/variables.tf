@@ -45,7 +45,7 @@ variable "environment" {
 variable "rdgw_instance_type" {
   description = "The EC2 instance type for the RD Gateway"
   type        = string
-  default     = "t3.large"
+  default     = "t3.small"
 }
 
 variable "rdgw_allowed_cidr" {

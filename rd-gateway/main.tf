@@ -90,8 +90,8 @@ data "template_file" "user_data" {
   template = file("${path.module}/user-data.ps1")
 
   vars = {
-      computer_name = var.rdgw_name
-  }  
+    computer_name = var.rdgw_name
+  }
 }
 
 # IAM instance profile.
@@ -169,10 +169,10 @@ resource "aws_instance" "rdgw" {
   ami           = data.aws_ami.windows2019.id
   instance_type = var.rdgw_instance_type
 
-  key_name        = var.key_name
-  monitoring      = true
-  subnet_id       = var.public_subnet_id
-  security_groups = [aws_security_group.main.id]
+  key_name               = var.key_name
+  monitoring             = true
+  subnet_id              = var.public_subnet_id
+  vpc_security_group_ids = [aws_security_group.main.id]
 
   root_block_device {
     volume_type = "gp3"
@@ -200,4 +200,23 @@ resource "aws_eip" "main" {
 resource "aws_eip_association" "main" {
   instance_id   = aws_instance.rdgw.id
   allocation_id = aws_eip.main.id
+}
+
+# This data source allows to find a Hosted Zone ID given Hosted Zone name and certain search criteria.
+data "aws_route53_zone" "selected" {
+  count = var.route53_public_zone == null ? 0 : 1
+
+  name         = var.route53_public_zone
+  private_zone = false
+}
+
+# Create A record in Route 53 zone.
+resource "aws_route53_record" "rdgw" {
+  count = var.route53_public_zone == null ? 0 : 1
+
+  zone_id = data.aws_route53_zone.selected[0].zone_id
+  name    = "${var.rdgw_name}.ops.${data.aws_route53_zone.selected[0].name}"
+  type    = "A"
+  ttl     = "60"
+  records = [aws_eip.main.public_ip]
 }

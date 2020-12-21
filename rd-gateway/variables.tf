@@ -59,3 +59,9 @@ variable "rdgw_name" {
   type        = string
   default     = "rdgw01"
 }
+
+variable "route53_public_zone" {
+  description = "The name of the public Route 53 zone (aka domain name) that will hold the A record for the RD Gateway instance"
+  type        = string
+  default     = null
+}

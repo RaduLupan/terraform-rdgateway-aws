@@ -7,6 +7,12 @@ variable "region" {
   type        = string
 }
 
+variable "route53_public_zone" {
+  description = "The name of the public Route 53 zone (aka domain name) that Letsencrypt certificates are issued for"
+  type        = string
+  default     = null
+}
+
 #---------------------------------------------------------------
 # OPTIONAL PARAMETERS: These parameters have resonable defaults.
 #---------------------------------------------------------------

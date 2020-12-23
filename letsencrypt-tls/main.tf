@@ -99,6 +99,7 @@ data "template_file" "le-certbot-lambda-policy" {
 
 # Lambda certbot IAM policy based on template.
 resource "aws_iam_policy" "le-certbot-lambda-policy" {
+   name   = "le-certbot-lambda-policy"
    policy = data.template_file.le-certbot-lambda-policy.rendered
 }
 

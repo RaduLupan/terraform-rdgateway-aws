@@ -57,3 +57,23 @@ resource "aws_s3_bucket_object" "certbot_upload" {
   source = "./certbot-0.27.1.zip"
   etag   = filemd5("./certbot-0.27.1.zip")
 }
+
+# Lambda execution role
+resource "aws_iam_role" "execution" {
+  name               = "letsencrypt-certbot-lambda-execution"
+  assume_role_policy = data.aws_iam_policy_document.assume_execution.json
+
+  tags = local.common_tags
+}
+
+# Trust policy for the IAM role
+data "aws_iam_policy_document" "assume_execution" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}

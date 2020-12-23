@@ -35,7 +35,7 @@
         "s3:PutObject"
       ],
       "Effect": "Allow",
-      "Resource": "${s3_bucket_arn}"
+      "Resource": "${s3_bucket_arn}/*"
     },
     {
       "Sid": "S3GlobalAccess",
@@ -43,7 +43,7 @@
         "s3:ListBucket"
       ],
       "Effect": "Allow",
-      "Resource": "*"
+      "Resource": "${s3_bucket_arn}"
     },
     {
       "Sid": "Route53ZoneAccess",

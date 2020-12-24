@@ -9,8 +9,8 @@ locals {
   route53_zone_id = data.aws_route53_zone.selected.zone_id
 
   # Wildcard certificate is issued for either *.example.com or *.<var.subdomain_name>.example.com if var.subdomain_name is not null.
-  domains = var.subdomain_name == null ? "*.${var.route53_public_zone}" : "*.${var.subdomain_name}${var.route53_public_zone}"
-
+  domains = var.subdomain_name == null ? "*.${var.route53_public_zone}" : "*.${var.subdomain_name}.${var.route53_public_zone}"
+  
   common_tags = {
     terraform   = "true"
     environment = var.environment
@@ -111,19 +111,24 @@ resource "aws_lambda_function" "le_certbot_lambda" {
 
   # For simplicity, the Lambda function and the S3 bucket that holds its code have the same name.
   function_name = local.s3_name
+  description = "Runs certbot to get TLS certificate from Letsencrypt."
+  
   role          = aws_iam_role.execution.arn
   handler       = "main.lambda_handler"
 
   runtime = "python3.6"
+  timeout = 300
 
   environment {
     variables = {
       domains   = local.domains
       email     = var.email
-      s3_bucket = "cert_bucket"
+      s3_bucket = aws_s3_bucket.letsencrypt_tls.bucket
       s3_prefix = "letsencrypt-tls"
     }
   }
+
+  depends_on = [aws_s3_bucket_object.certbot_upload]
 
   tags = local.common_tags
 }
@@ -161,8 +166,8 @@ resource "aws_s3_bucket" "letsencrypt_tls" {
 
 # SQS queue that gets notified when new certificate is deposited by certbot Lambda in the S3 bucket. 
 resource "aws_sqs_queue" "letsencrypt_tls" {
-  name                      = "${local.s3_name}-${var.region}"
- 
+  name = "${local.s3_name}-${var.region}"
+
   tags = local.common_tags
 }
 
@@ -197,8 +202,45 @@ resource "aws_s3_bucket_notification" "letsencrypt_tls" {
   bucket = aws_s3_bucket.letsencrypt_tls.id
 
   queue {
-    queue_arn     = aws_sqs_queue.letsencrypt_tls.arn
-    events        = ["s3:ObjectCreated:*"]
-    #filter_suffix = ".log"
+    queue_arn = aws_sqs_queue.letsencrypt_tls.arn
+    events    = ["s3:ObjectCreated:*"]
   }
+}
+
+# Events rule that runs every 60 days.
+resource "aws_cloudwatch_event_rule" "letsencrypt_tls" {
+  description = "Gets a new Letsencrypt TLS certificate every 60 days"
+
+  schedule_expression = "rate(60 days)"
+  is_enabled          = true
+}
+
+# Template for lambda certbot input.
+data "template_file" "le-certbot-lambda-input" {
+  template = file("${path.module}/le-certbot-lambda-input.json.tpl")
+
+  vars = {
+    email     = var.email
+    domains   = local.domains
+    s3_bucket = aws_s3_bucket.letsencrypt_tls.bucket
+    s3_prefix = "letsencrypt-tls"
+  }
+}
+
+# Event target pointing to certbot Lambda function.
+resource "aws_cloudwatch_event_target" "letsencrypt_tls" {
+  target_id = local.s3_name
+  rule      = aws_cloudwatch_event_rule.letsencrypt_tls.name
+  arn       = aws_lambda_function.le_certbot_lambda.arn
+
+  input     = data.template_file.le-certbot-lambda-input.rendered
+}
+
+# Permission for Events to invoke Lambda
+resource "aws_lambda_permission" "allow_events" {
+  statement_id  = "AllowExecutionFromEvents"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.le_certbot_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.letsencrypt_tls.arn
 }

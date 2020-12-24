@@ -42,16 +42,6 @@ resource "aws_s3_bucket" "certbot" {
     enabled = true
   }
 
-  /*
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
-      }
-    }
-  }
-  */
-
   lifecycle_rule {
     id      = "ExpireOldVersionsAfter30Days"
     enabled = true
@@ -132,6 +122,37 @@ resource "aws_lambda_function" "le_certbot_lambda" {
       email     = var.email
       s3_bucket = "cert_bucket"
       s3_prefix = "letsencrypt-tls"
+    }
+  }
+
+  tags = local.common_tags
+}
+
+# S3 bucket that holds the Letsencrypt TLS certificates.
+resource "aws_s3_bucket" "letsencrypt_tls" {
+  bucket = "${var.route53_public_zone}-letsencrypt-tls-${var.region}"
+  acl    = "private"
+
+  force_destroy = "true"
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "ExpireOldVersionsAfter30Days"
+    enabled = true
+
+    noncurrent_version_expiration {
+      days = 30
     }
   }
 

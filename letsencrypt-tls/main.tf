@@ -8,6 +8,9 @@ locals {
 
   route53_zone_id = data.aws_route53_zone.selected.zone_id
 
+  # Wildcard certificate is issued for either *.example.com or *.<var.subdomain_name>.example.com if var.subdomain_name is not null.
+  domains = var.subdomain_name == null ? "*.${var.route53_public_zone}" : "*.${var.subdomain_name}${var.route53_public_zone}"
+
   common_tags = {
     terraform   = "true"
     environment = var.environment
@@ -101,12 +104,36 @@ data "template_file" "le-certbot-lambda-policy" {
 
 # Lambda certbot IAM policy based on template.
 resource "aws_iam_policy" "le-certbot-lambda-policy" {
-   name   = "le-certbot-lambda-policy"
-   policy = data.template_file.le-certbot-lambda-policy.rendered
+  name   = "le-certbot-lambda-policy"
+  policy = data.template_file.le-certbot-lambda-policy.rendered
 }
 
 # Lambda policy attachment to Lambda execution role.
 resource "aws_iam_role_policy_attachment" "le-certbot-lambda-policy-attach" {
   role       = aws_iam_role.execution.name
   policy_arn = aws_iam_policy.le-certbot-lambda-policy.arn
+}
+
+# Letsencrypt certbot Lambda function.
+resource "aws_lambda_function" "le_certbot_lambda" {
+  s3_bucket = local.s3_bucket_name
+  s3_key    = "certbot-0.27.1.zip"
+
+  # For simplicity, the Lambda function and the S3 bucket that holds its code have the same name.
+  function_name = local.s3_name
+  role          = aws_iam_role.execution.arn
+  handler       = "main.lambda_handler"
+
+  runtime = "python3.6"
+
+  environment {
+    variables = {
+      domains   = local.domains
+      email     = var.email
+      s3_bucket = "cert_bucket"
+      s3_prefix = "letsencrypt-tls"
+    }
+  }
+
+  tags = local.common_tags
 }

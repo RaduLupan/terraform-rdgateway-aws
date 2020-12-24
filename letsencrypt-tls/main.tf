@@ -158,3 +158,36 @@ resource "aws_s3_bucket" "letsencrypt_tls" {
 
   tags = local.common_tags
 }
+
+# SQS queue that gets notified when new certificate is deposited by certbot Lambda in the S3 bucket. 
+resource "aws_sqs_queue" "letsencrypt_tls" {
+  name                      = "${local.s3_name}-${var.region}"
+ 
+  tags = local.common_tags
+}
+
+# SQS policy.
+resource "aws_sqs_queue_policy" "main" {
+  queue_url = aws_sqs_queue.letsencrypt_tls.id
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "SQSQueuePolicy",
+  "Statement": [
+    {
+      "Sid": "Allow-SQS-SendMessage-from-LetsencryptTLSBucket",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "sqs:SendMessage",
+      "Resource": "${aws_sqs_queue.letsencrypt_tls.arn}",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "${aws_s3_bucket.letsencrypt_tls.arn}"
+        }
+      }
+    }
+  ]
+}
+POLICY
+}

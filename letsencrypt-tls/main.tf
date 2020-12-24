@@ -191,3 +191,14 @@ resource "aws_sqs_queue_policy" "main" {
 }
 POLICY
 }
+
+# S3 bucket notification to SQS.
+resource "aws_s3_bucket_notification" "letsencrypt_tls" {
+  bucket = aws_s3_bucket.letsencrypt_tls.id
+
+  queue {
+    queue_arn     = aws_sqs_queue.letsencrypt_tls.arn
+    events        = ["s3:ObjectCreated:*"]
+    #filter_suffix = ".log"
+  }
+}

@@ -28,3 +28,15 @@ variable "s3_prefix" {
   type        = string
   default     = "letsencrypt-certbot-lambda"
 }
+
+variable "subdomain_name" {
+  description = "The name of the subdomain if applicable i.e. ops"
+  type        = string
+  default     = null
+}
+
+variable "email" {
+  description = "The email address that Letsencrypt sends notifications to"
+  type        = string
+  default     = null
+}

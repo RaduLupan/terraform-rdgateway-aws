@@ -57,9 +57,9 @@ resource "aws_s3_bucket" "certbot" {
 # Upload the certbot code to S3 bucket.
 resource "aws_s3_bucket_object" "certbot_upload" {
   bucket = local.s3_bucket_name
-  key    = "certbot-0.27.1.zip"
-  source = "./certbot-0.27.1.zip"
-  etag   = filemd5("./certbot-0.27.1.zip")
+  key    = var.certbot_zip
+  source = "./${var.certbot_zip}"
+  etag   = filemd5("./${var.certbot_zip}")
 }
 
 # Lambda execution role
@@ -107,7 +107,7 @@ resource "aws_iam_role_policy_attachment" "le-certbot-lambda-policy-attach" {
 # Letsencrypt certbot Lambda function.
 resource "aws_lambda_function" "le_certbot_lambda" {
   s3_bucket = local.s3_bucket_name
-  s3_key    = "certbot-0.27.1.zip"
+  s3_key    = var.certbot_zip
 
   # For simplicity, the Lambda function and the S3 bucket that holds its code have the same name.
   function_name = local.s3_name

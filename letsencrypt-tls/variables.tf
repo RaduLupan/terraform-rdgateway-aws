@@ -13,6 +13,11 @@ variable "route53_public_zone" {
   default     = null
 }
 
+variable "certbot_zip" {
+  description = "The name of the certbot zip artifact to use i.e. certbot-0.27.1.zip"
+  type        = string
+}
+
 #---------------------------------------------------------------
 # OPTIONAL PARAMETERS: These parameters have resonable defaults.
 #---------------------------------------------------------------
@@ -40,3 +45,4 @@ variable "email" {
   type        = string
   default     = null
 }
+

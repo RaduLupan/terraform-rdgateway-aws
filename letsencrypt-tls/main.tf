@@ -87,7 +87,7 @@ data "template_file" "le-certbot-lambda-policy" {
   template = file("${path.module}/le-certbot-lambda-policy.json.tpl")
 
   vars = {
-    s3_bucket_arn    = aws_s3_bucket.certbot.arn
+    s3_bucket_arn    = aws_s3_bucket.letsencrypt_tls.arn
     route53_zone_arn = "arn:aws:route53:::hostedzone/${local.route53_zone_id}"
   }
 }

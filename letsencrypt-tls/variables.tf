@@ -46,3 +46,8 @@ variable "email" {
   default     = null
 }
 
+variable "windows_target" {
+  description = "Set to true if the tls certificate will be installed on a Windows machine"
+  type        = bool
+  default     = true
+}

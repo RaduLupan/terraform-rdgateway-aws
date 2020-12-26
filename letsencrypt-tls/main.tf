@@ -62,6 +62,47 @@ resource "aws_s3_bucket_object" "certbot_upload" {
   etag   = filemd5("./${var.certbot_zip}")
 }
 
+# If var.windows_target is true create scripts folder in the certbot bucket.
+resource "aws_s3_bucket_object" "scripts" {
+  count = var.windows_target == true ? 1 : 0
+
+  bucket       = aws_s3_bucket.certbot.bucket
+  acl          = "private"
+  key          = "scripts/"
+  content_type = "application/x-directory"
+}
+
+
+# If var.windows_target is true upload the Powershell scripts to certbot S3 bucket.
+resource "aws_s3_bucket_object" "script1_upload" {
+  count = var.windows_target == true ? 1 : 0
+  
+  bucket = aws_s3_bucket.certbot.bucket
+  key    = "/scripts/create-scheduled-task.ps1"
+  source = "../scripts/create-scheduled-task.ps1"
+  etag   = filemd5("../scripts/create-scheduled-task.ps1")
+}
+
+# If var.windows_target is true upload the Powershell scripts to certbot S3 bucket.
+resource "aws_s3_bucket_object" "script2_upload" {
+  count = var.windows_target == true ? 1 : 0
+  
+  bucket = aws_s3_bucket.certbot.bucket
+  key    = "/scripts/get-latest-letsencrypt-tls.ps1"
+  source = "../scripts/get-latest-letsencrypt-tls.ps1"
+  etag   = filemd5("../scripts/get-latest-letsencrypt-tls.ps1")
+}
+
+# If var.windows_target is true upload the Powershell scripts to certbot S3 bucket.
+resource "aws_s3_bucket_object" "script3_upload" {
+  count = var.windows_target == true ? 1 : 0
+  
+  bucket = aws_s3_bucket.certbot.bucket
+  key    = "/scripts/renew-letsencrypt-tls.ps1"
+  source = "../scripts/renew-letsencrypt-tls.ps1"
+  etag   = filemd5("../scripts/renew-letsencrypt-tls.ps1")
+}
+
 # Lambda execution role
 resource "aws_iam_role" "execution" {
   name               = "letsencrypt-certbot-lambda-execution"

@@ -1,5 +1,36 @@
 <powershell>
-Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server
+# Install chocolatey.
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+if (! (Test-Path "C:\scripts")) {
+    New-Item -Path "C:\scripts" -ItemType Container | Out-Null
+}
+
+if (! (Test-Path "C:\OpenSSL-Win64")) {
+    New-Item -Path "OpenSSL-Win64" -ItemType Container | Out-Null
+}
+
+# Install OpenSSL Light.
+Invoke-Expression "choco install openssl.light --params `"/InstallDir:C:\OpenSSL-Win64`" -y"
+
+$PSProfile='C:\Windows\System32\WindowsPowerShell\v1.0\profile.ps1'
+$PSProfileContent="`$env:Path += `";C:\OpenSSL-Win64\bin\`"`n`$env:OPENSSL_CONF=`"C:\OpenSSL-Win64\bin\openssl.cfg`""
+
+# Create Powershell profile for all users all hosts.
+if (!(Test-Path $PSProfile)) {
+    New-Item -Path $PSProfile -ItemType File | Out-Null
+    $PSProfileContent | Set-Content $PSProfile
+ }
+ else {
+    # If a Powershell profile exists append a new line along with the new PSProfileContent.
+    $CurrentPSProfile=Get-Content $PSProfile
+    ($CurrentPSProfile+"`n"+$PSProfileContent) | Set-Content $PSProfile -Force
+ }
+
+# Install and configure RD Gateway feature.
+ Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server
 Import-Module RemoteDesktopServices
 $GroupName='Administrators';$DomainNetBiosName='BUILTIN'
 New-Item -path RDS:\GatewayServer\CAP -Name Default-CAP -UserGroups "$GroupName@$DomainNetBiosName" -AuthMethod 1

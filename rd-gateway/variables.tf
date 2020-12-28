@@ -32,6 +32,11 @@ variable "public_subnet_id" {
   type        = string
 }
 
+variable "s3_bucket" {
+  description = "The name of the S3 bucket that contains the scripts to be installed on the EC2 instance"
+  type        = string
+}
+
 #---------------------------------------------------------------
 # OPTIONAL PARAMETERS: These parameters have resonable defaults.
 #---------------------------------------------------------------
@@ -64,4 +69,14 @@ variable "route53_public_zone" {
   description = "The name of the public Route 53 zone (aka domain name) that will hold the A record for the RD Gateway instance"
   type        = string
   default     = null
+}
+
+variable "scripts" {
+  description = "The scripts in the S3 bucket that need to be downloaded on to the EC2 instance"
+  type        = map(string)
+  default     = {
+    "1_of_3" =  "/scripts/create-scheduled-task.ps1"
+    "2_of_3" =  "/scripts/get-latest-letsencrypt-tls.ps1"
+    "3_of_3" =  "/scripts/renew-letsencrypt-tls.ps1"
+  }
 }

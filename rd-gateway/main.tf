@@ -91,6 +91,11 @@ data "template_file" "user_data" {
 
   vars = {
     computer_name = var.rdgw_name
+    s3_bucket     = var.s3_bucket
+    region        = var.region
+    script1       = var.scripts["1_of_3"]
+    script2       = var.scripts["2_of_3"]
+    script3       = var.scripts["3_of_3"]
   }
 }
 
@@ -164,7 +169,7 @@ resource "aws_iam_role_policy" "main" {
   EOF
 }
 
-
+# RD Gateway EC2 instance.
 resource "aws_instance" "rdgw" {
   ami           = data.aws_ami.windows2019.id
   instance_type = var.rdgw_instance_type

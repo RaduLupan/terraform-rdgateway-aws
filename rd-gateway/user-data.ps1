@@ -1,4 +1,7 @@
 <powershell>
+$region="${region}"
+$S3Bucket="${s3_bucket}"
+
 # Install chocolatey.
 Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
@@ -27,6 +30,13 @@ if (!(Test-Path $PSProfile)) {
     # If a Powershell profile exists append a new line along with the new PSProfileContent.
     $CurrentPSProfile=Get-Content $PSProfile
     ($CurrentPSProfile+"`n"+$PSProfileContent) | Set-Content $PSProfile -Force
+ }
+
+ # Download the Powershell scripts from S3 buket in the C:\scripts folder.
+ if ($S3Bucket -ne $null) {
+    Read-S3Object -BucketName $S3Bucket -Key "${script1}" -File "C:${script1}" -Region $Region
+    Read-S3Object -BucketName $S3Bucket -Key "${script2}" -File "C:${script2}" -Region $Region
+    Read-S3Object -BucketName $S3Bucket -Key "${script3}" -File "C:${script3}" -Region $Region
  }
 
 # Install and configure RD Gateway feature.

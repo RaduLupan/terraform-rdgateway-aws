@@ -25,19 +25,22 @@ $PSProfileContent="`$env:Path += `";C:\OpenSSL-Win64\bin\`"`n`$env:OPENSSL_CONF=
 if (!(Test-Path $PSProfile)) {
     New-Item -Path $PSProfile -ItemType File | Out-Null
     $PSProfileContent | Set-Content $PSProfile
- }
- else {
+}
+else {
     # If a Powershell profile exists append a new line along with the new PSProfileContent.
     $CurrentPSProfile=Get-Content $PSProfile
     ($CurrentPSProfile+"`n"+$PSProfileContent) | Set-Content $PSProfile -Force
- }
+}
 
- # Download the Powershell scripts from S3 buket in the C:\scripts folder.
- if ($S3Bucket -ne $null) {
+# Download the Powershell scripts from S3 buket in the C:\scripts folder.
+if ($S3Bucket -ne $null) {
     Read-S3Object -BucketName $S3Bucket -Key "${script1}" -File "C:${script1}" -Region $Region
     Read-S3Object -BucketName $S3Bucket -Key "${script2}" -File "C:${script2}" -Region $Region
     Read-S3Object -BucketName $S3Bucket -Key "${script3}" -File "C:${script3}" -Region $Region
- }
+}
+
+# Run script1
+Invoke-Expression "C:${script1}"
 
 # Install and configure RD Gateway feature.
  Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server

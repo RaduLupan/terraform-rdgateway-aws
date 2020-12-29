@@ -4,6 +4,8 @@ $S3Bucket ="${s3_bucket}"
 $TLSS3Bucket = "${tls_s3_bucket}"
 $SQSUrl = "${sqs_url}"
 
+Set-TimeZone -Name "Eastern Standard Time"
+
 # Install chocolatey.
 Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072

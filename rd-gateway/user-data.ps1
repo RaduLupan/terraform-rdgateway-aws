@@ -1,7 +1,8 @@
 <powershell>
 $region ="${region}"
 $S3Bucket ="${s3_bucket}"
-$TLSS3Bucket = "${tls_s3_bucket}"
+$S3BucketTLS = "${s3_bucket_tls}"
+$S3BucketFolderTLS="${s3_folder_tls}"
 $SQSUrl = "${sqs_url}"
 
 Set-TimeZone -Name "Eastern Standard Time"
@@ -44,7 +45,7 @@ if ($S3Bucket -ne $null) {
 }
 
 # Run script1: create-scheduled-task.ps1.
-Invoke-Expression "C:${script1} -region $Region -SQSUrl $SQSUrl -S3Bucket $TLSS3Bucket"
+Invoke-Expression "C:${script1} -region $Region -SQSUrl $SQSUrl -S3Bucket $S3BucketTLS"
 
 # Install and configure RD Gateway feature.
  Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server

@@ -37,9 +37,14 @@ variable "s3_bucket" {
   type        = string
 }
 
-variable "tls_s3_bucket" {
-  description  = "The name of the bucket that Lambda function saves the TLS certiciates in"
+variable "s3_bucket_tls" {
+  description  = "The name of the bucket that the certbot Lambda function deposits the TLS certificates in"
   type         = string
+}
+
+variable "s3_folder_tls" {
+  description = "The name of the S3 folder where the TLS certificates are deposited by the certbot Lambda"
+  type        = string
 }
 
 variable "sqs_url" {

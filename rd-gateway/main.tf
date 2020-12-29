@@ -94,8 +94,9 @@ data "template_file" "user_data" {
     computer_name = var.rdgw_name
     
     s3_bucket     = var.s3_bucket
-    tls_s3_bucket = var.tls_s3_bucket
-    
+    s3_bucket_tls = var.s3_bucket_tls
+    s3_folder_tls = var.s3_folder_tls
+
     sqs_url       = var.sqs_url
     script1       = var.scripts["1_of_3"]
     script2       = var.scripts["2_of_3"]

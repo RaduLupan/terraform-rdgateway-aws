@@ -51,7 +51,7 @@ Invoke-Expression "C:${script1} -Region $Region -S3Bucket $S3BucketTLS -SQSUrl $
 Invoke-Expression "C:${script1} -Region $Region -S3Bucket $S3BucketTLS -S3Folder $S3BucketFolderTLS -psScript C:${script3}"
 
 # Install and configure RD Gateway feature.
- Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server
+Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server
 Import-Module RemoteDesktopServices
 $GroupName='Administrators';$DomainNetBiosName='BUILTIN'
 New-Item -path RDS:\GatewayServer\CAP -Name Default-CAP -UserGroups "$GroupName@$DomainNetBiosName" -AuthMethod 1

@@ -91,7 +91,7 @@ variable "scripts" {
   type        = map(string)
   default     = {
     "1_of_3" =  "/scripts/create-scheduled-task.ps1"
-    "2_of_3" =  "/scripts/get-latest-letsencrypt-tls.ps1"
-    "3_of_3" =  "/scripts/renew-letsencrypt-tls.ps1"
+    "2_of_3" =  "/scripts/renew-letsencrypt-tls.ps1"
+    "3_of_3" =  "/scripts/get-latest-letsencrypt-tls.ps1"
   }
 }

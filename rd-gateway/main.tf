@@ -90,9 +90,13 @@ data "template_file" "user_data" {
   template = file("${path.module}/user-data.ps1")
 
   vars = {
-    computer_name = var.rdgw_name
-    s3_bucket     = var.s3_bucket
     region        = var.region
+    computer_name = var.rdgw_name
+    
+    s3_bucket     = var.s3_bucket
+    tls_s3_bucket = var.tls_s3_bucket
+    
+    sqs_url       = var.sqs_url
     script1       = var.scripts["1_of_3"]
     script2       = var.scripts["2_of_3"]
     script3       = var.scripts["3_of_3"]

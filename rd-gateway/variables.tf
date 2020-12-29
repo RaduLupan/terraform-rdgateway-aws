@@ -37,6 +37,16 @@ variable "s3_bucket" {
   type        = string
 }
 
+variable "tls_s3_bucket" {
+  description  = "The name of the bucket that Lambda function saves the TLS certiciates in"
+  type         = string
+}
+
+variable "sqs_url" {
+  description = "The URL of the SQS Queue that receives notification from S3 when new certificates arrive."
+  type        = string
+}
+
 #---------------------------------------------------------------
 # OPTIONAL PARAMETERS: These parameters have resonable defaults.
 #---------------------------------------------------------------

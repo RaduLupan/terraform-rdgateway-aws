@@ -2,8 +2,8 @@
     [string] $psScript,
     [string] $Region,
     [string] $S3Bucket,
-    [string] $S3Folder,
-    [string] $SQSUrl
+    [string] $S3Folder="",
+    [string] $SQSUrl=""
 )
 
 $TaskName=$psScript.Split('\')[-1]

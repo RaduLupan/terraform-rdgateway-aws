@@ -5,12 +5,13 @@ provider "aws" {
 locals {
   s3_name        = "${var.s3_prefix}-${var.environment}-${lower(random_string.random.result)}"
   s3_bucket_name = split(".", aws_s3_bucket.certbot.bucket_domain_name)[0]
+  s3_folder_tls  = "letsencrypt-tls/${replace(local.domains, "*.", "")}"
 
   route53_zone_id = data.aws_route53_zone.selected.zone_id
 
   # Wildcard certificate is issued for either *.example.com or *.<var.subdomain_name>.example.com if var.subdomain_name is not null.
   domains = var.subdomain_name == null ? "*.${var.route53_public_zone}" : "*.${var.subdomain_name}.${var.route53_public_zone}"
-  
+
   common_tags = {
     terraform   = "true"
     environment = var.environment
@@ -76,7 +77,7 @@ resource "aws_s3_bucket_object" "scripts" {
 # If var.windows_target is true upload the Powershell scripts to certbot S3 bucket.
 resource "aws_s3_bucket_object" "script1_upload" {
   count = var.windows_target == true ? 1 : 0
-  
+
   bucket = aws_s3_bucket.certbot.bucket
   key    = "/scripts/create-scheduled-task.ps1"
   source = "../scripts/create-scheduled-task.ps1"
@@ -86,7 +87,7 @@ resource "aws_s3_bucket_object" "script1_upload" {
 # If var.windows_target is true upload the Powershell scripts to certbot S3 bucket.
 resource "aws_s3_bucket_object" "script2_upload" {
   count = var.windows_target == true ? 1 : 0
-  
+
   bucket = aws_s3_bucket.certbot.bucket
   key    = "/scripts/get-latest-letsencrypt-tls.ps1"
   source = "../scripts/get-latest-letsencrypt-tls.ps1"
@@ -96,7 +97,7 @@ resource "aws_s3_bucket_object" "script2_upload" {
 # If var.windows_target is true upload the Powershell scripts to certbot S3 bucket.
 resource "aws_s3_bucket_object" "script3_upload" {
   count = var.windows_target == true ? 1 : 0
-  
+
   bucket = aws_s3_bucket.certbot.bucket
   key    = "/scripts/renew-letsencrypt-tls.ps1"
   source = "../scripts/renew-letsencrypt-tls.ps1"
@@ -152,10 +153,10 @@ resource "aws_lambda_function" "le_certbot_lambda" {
 
   # For simplicity, the Lambda function and the S3 bucket that holds its code have the same name.
   function_name = local.s3_name
-  description = "Runs certbot to get TLS certificate from Letsencrypt."
-  
-  role          = aws_iam_role.execution.arn
-  handler       = "main.lambda_handler"
+  description   = "Runs certbot to get TLS certificate from Letsencrypt."
+
+  role    = aws_iam_role.execution.arn
+  handler = "main.lambda_handler"
 
   runtime = "python3.6"
   timeout = 300
@@ -274,7 +275,7 @@ resource "aws_cloudwatch_event_target" "letsencrypt_tls" {
   rule      = aws_cloudwatch_event_rule.letsencrypt_tls.name
   arn       = aws_lambda_function.le_certbot_lambda.arn
 
-  input     = data.template_file.le-certbot-lambda-input.rendered
+  input = data.template_file.le-certbot-lambda-input.rendered
 }
 
 # Permission for Events to invoke Lambda

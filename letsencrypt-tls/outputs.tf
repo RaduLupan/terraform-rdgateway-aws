@@ -9,8 +9,8 @@ output "s3_bucket_tls" {
 }
 
 output "s3_folder_tls" {
-    description = "The name of the S3 folder where the TLS certificates are deposited by the certbot Lambda"
-    value       = "letsencrypt-tls/${replace(local.domains, "*.", "")}"
+  description = "The name of the S3 folder where the TLS certificates are deposited by the certbot Lambda"
+  value       = local.s3_folder_tls
 }
 
 output "lambda_certbot_arn" {
@@ -19,7 +19,7 @@ output "lambda_certbot_arn" {
 }
 
 output "tls_domains" {
-  description  = "The domains covered by TLS certificate"
-  value        = local.domains
+  description = "The domains covered by TLS certificate"
+  value       = local.domains
 }
 

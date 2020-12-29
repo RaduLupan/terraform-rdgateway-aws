@@ -1,6 +1,8 @@
 <powershell>
-$region="${region}"
-$S3Bucket="${s3_bucket}"
+$region ="${region}"
+$S3Bucket ="${s3_bucket}"
+$TLSS3Bucket = "${tls_s3_bucket}"
+$SQSUrl = "${sqs_url}"
 
 # Install chocolatey.
 Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -40,7 +42,7 @@ if ($S3Bucket -ne $null) {
 }
 
 # Run script1
-Invoke-Expression "C:${script1}"
+Invoke-Expression "C:${script1} -region $Region -SQSUrl $SQSUrl -S3Bucket $TLSS3Bucket"
 
 # Install and configure RD Gateway feature.
  Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server

@@ -43,7 +43,7 @@ if ($S3Bucket -ne $null) {
     Read-S3Object -BucketName $S3Bucket -Key "${script3}" -File "C:${script3}" -Region $Region
 }
 
-# Run script1
+# Run script1: create-scheduled-task.ps1.
 Invoke-Expression "C:${script1} -region $Region -SQSUrl $SQSUrl -S3Bucket $TLSS3Bucket"
 
 # Install and configure RD Gateway feature.

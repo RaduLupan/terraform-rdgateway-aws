@@ -44,8 +44,11 @@ if ($S3Bucket -ne $null) {
     Read-S3Object -BucketName $S3Bucket -Key "${script3}" -File "C:${script3}" -Region $Region
 }
 
-# Run script1: create-scheduled-task.ps1.
-Invoke-Expression "C:${script1} -region $Region -SQSUrl $SQSUrl -S3Bucket $S3BucketTLS"
+# Run script1: create-scheduled-task.ps1 to schedule the renew-letsencrypt-tls.ps1 script to run daily.
+Invoke-Expression "C:${script1} -Region $Region -S3Bucket $S3BucketTLS -SQSUrl $SQSUrl -psScript C:${script2}"
+
+# Run script1: create-scheduled-task.ps1 to schedule the get-latest-letsencrypt-tls.ps1 script to run at system startup.
+Invoke-Expression "C:${script1} -Region $Region -S3Bucket $S3BucketTLS -S3Folder $S3Folder -psScript C:${script3}"
 
 # Install and configure RD Gateway feature.
  Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server

@@ -8,12 +8,12 @@ param (
     [string] $PFXPassword=-join ((65..90) + (97..122) | Get-Random -Count 15 | % {[char]$_}),
     [string] $Region,
     [string] $S3Bucket,
-    [string] $S3Subfolder
+    [string] $S3Folder
 )
 
-# Download the public and private keys from S3 bucket folder letsencrypt-tls where the certbot Lambda saved them.
-$CertPrivateKey="letsencrypt-tls/$S3Subfolder/privkey.pem"
-$CertPublicKey="letsencrypt-tls/$S3Subfolder/fullchain.pem"
+# Download the public and private keys from S3 bucket folder where the certbot Lambda saved them.
+$CertPrivateKey="$S3Folder/privkey.pem"
+$CertPublicKey="$S3Folder/fullchain.pem"
 
 Read-S3Object -BucketName $S3Bucket -Key $CertPrivateKey -File "$LocalPath\cert-private.pem" -Region $Region
 Read-S3Object -BucketName $S3Bucket -Key $CertPublicKey -File "$LocalPath\cert-public.pem" -Region $Region

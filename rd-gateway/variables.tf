@@ -23,8 +23,8 @@ variable "s3_bucket" {
 }
 
 variable "s3_bucket_tls" {
-  description  = "The name of the bucket that the certbot Lambda function deposits the TLS certificates in"
-  type         = string
+  description = "The name of the bucket that the certbot Lambda function deposits the TLS certificates in"
+  type        = string
 }
 
 variable "s3_folder_tls" {
@@ -62,7 +62,7 @@ variable "rdgw_allowed_cidr" {
 variable "rdgw_name" {
   description = "The name of the RD Gateway instance"
   type        = string
-  default     = "rdgw01"
+  default     = "rdgateway"
 }
 
 variable "route53_public_zone" {
@@ -72,12 +72,12 @@ variable "route53_public_zone" {
 }
 
 variable "scripts" {
-  description = "The scripts in the S3 bucket that need to be downloaded on to the EC2 instance"
+  description = "The scripts in the S3 bucket to be downloaded on the EC2 instance"
   type        = map(string)
-  default     = {
-    "1_of_3" =  "/scripts/create-scheduled-task.ps1"
-    "2_of_3" =  "/scripts/renew-letsencrypt-tls.ps1"
-    "3_of_3" =  "/scripts/get-latest-letsencrypt-tls.ps1"
+  default = {
+    "create_task" = "/scripts/create-scheduled-task.ps1"
+    "renew_tls"   = "/scripts/renew-letsencrypt-tls.ps1"
+    "get_tls"     = "/scripts/get-latest-letsencrypt-tls.ps1"
   }
 }
 

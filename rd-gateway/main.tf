@@ -201,6 +201,25 @@ resource "aws_instance" "rdgw" {
   }
 }
 
+# Template file for the SSM document.
+data "template_file" "ssm_document" {
+  template = file("${path.module}/ssm-document.json.tpl")
+
+  vars = {
+    ad_directory_id = var.ad_directory_id
+    ad_domain_fqdn  = var.ad_domain_fqdn
+    ad_dns_ips      = var.ad_dns_ips
+  }
+}
+
+# The SSM document.
+resource "aws_ssm_document" "main" {
+  name          = "rd-gateway-ssm-document"
+  document_type = "Automation"
+
+  content = data.template_file.ssm_document.rendered
+}
+
 # Elastic IP.
 resource "aws_eip" "main" {
   vpc = true

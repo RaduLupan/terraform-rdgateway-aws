@@ -215,6 +215,17 @@ resource "aws_iam_role_policy" "main" {
         ],
         "Effect": "Allow",
         "Resource": "*"
+      },
+      {
+        "Sid": "SSMMessagesAccess",
+        "Action": [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
       }
     ]
   }

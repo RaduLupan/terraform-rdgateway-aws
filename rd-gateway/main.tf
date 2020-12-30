@@ -178,7 +178,7 @@ data "template_file" "ssm_document" {
 
 # The SSM document.
 resource "aws_ssm_document" "main" {
-  name          = "rd-gateway-ssm-document"
+  name          = "${var.ad_domain_fqdn}-domain-join"
   document_type = "Command"
 
   content = data.template_file.ssm_document.rendered
@@ -218,7 +218,7 @@ resource "aws_route53_record" "rdgw" {
   count = var.route53_public_zone == null ? 0 : 1
 
   zone_id = data.aws_route53_zone.selected[0].zone_id
-  name    = "${var.rdgw_name}.ops.${data.aws_route53_zone.selected[0].name}"
+  name    = "${var.rdgw_name}.${data.aws_route53_zone.selected[0].name}"
   type    = "A"
   ttl     = "60"
   records = [aws_eip.main.public_ip]

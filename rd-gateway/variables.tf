@@ -13,8 +13,8 @@ variable "key_name" {
 }
 
 variable "ad_dns_ips" {
-  description = "The IPs of the DNS servers for the AD domain (comma separated)"
-  type        = string
+  description = "The IPs of the DNS servers for the AD domain"
+  type        = list(string)
 }
 
 variable "ad_directory_id" {

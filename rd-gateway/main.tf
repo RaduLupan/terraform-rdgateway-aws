@@ -110,28 +110,23 @@ resource "aws_iam_instance_profile" "main" {
   role = aws_iam_role.main.name
 }
 
+# Template file for the EC2 instance role trust policy.
+data "template_file" "ec2_role_trust" {
+  template = file("${path.module}/ec2-role-trust.json.tpl")
+}
+
 # IAM instance role
 resource "aws_iam_role" "main" {
   name = "${var.rdgw_name}-role"
   path = "/"
 
-  assume_role_policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": "sts:AssumeRole",
-            "Principal": {
-               "Service": "ec2.amazonaws.com"
-            },
-            "Effect": "Allow",
-            "Sid": ""
-        }
-    ]
-}
-EOF
-
+  assume_role_policy = data.template_file.ec2_role_trust.rendered
   tags = local.common_tags
+}
+
+# Template file for the EC2 instance role IAM policy.
+data "template_file" "ec2_role_policy" {
+  template = file("${path.module}/ec2-role-policy.json.tpl")
 }
 
 # IAM instance policy
@@ -139,97 +134,7 @@ resource "aws_iam_role_policy" "main" {
   name = "${var.rdgw_name}-policy"
   role = aws_iam_role.main.id
 
-  policy = <<-EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Sid": "SSMAccess",
-        "Action": [
-          "ssm:Get*",
-          "ssm:Describe*",
-          "ssm:List*",
-          "ssm:CreateAssociation",
-          "ssm:UpdateAssociationStatus",
-          "ssm:UpdateInstanceInformation",
-          "ssm:UpdateInstanceAssociationStatus"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "S3Access",
-        "Action": [
-          "s3:GetObject"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "SQSAccess",
-        "Action": [
-          "sqs:DeleteMessage",
-          "sqs:ReceiveMessage"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "EC2MessagesAccess",
-        "Action": [
-          "ec2messages:AcknowledgeMessage",
-          "ec2messages:DeleteMessage",
-          "ec2messages:FailMessage",
-          "ec2messages:GetEndpoint",
-          "ec2messages:GetMessages",
-          "ec2messages:SendReply"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "EC2Access",
-        "Action": [
-          "ec2:DescribeInstanceStatus"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "DSAccess",
-        "Action": [
-          "ds:CreateComputer",
-          "ds:DescribeDirectorie"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "CWLogsAccess",
-        "Action": [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams",
-          "logs:PutLogEvents"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      },
-      {
-        "Sid": "SSMMessagesAccess",
-        "Action": [
-          "ssmmessages:CreateControlChannel",
-          "ssmmessages:CreateDataChannel",
-          "ssmmessages:OpenControlChannel",
-          "ssmmessages:OpenDataChannel"
-        ],
-        "Effect": "Allow",
-        "Resource": "*"
-      }
-    ]
-  }
-  EOF
+  policy = data.template_file.ec2_role_policy.rendered
 }
 
 # RD Gateway EC2 instance.

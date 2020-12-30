@@ -12,21 +12,6 @@ variable "key_name" {
   type        = string
 }
 
-variable "ad_dns_ips" {
-  description = "The IPs of the DNS servers for the AD domain"
-  type        = list(string)
-}
-
-variable "ad_directory_id" {
-  description = "The ID of the AD domain"
-  type        = string
-}
-
-variable "ad_domain_fqdn" {
-  description = "The  fully qualified domain name of the AD domain, i.e. example.com"
-  type        = string
-}
-
 variable "public_subnet_id" {
   description = "The  ID of a public subnet in the VPC where the RD Gateway will be deployed"
   type        = string
@@ -94,4 +79,22 @@ variable "scripts" {
     "2_of_3" =  "/scripts/renew-letsencrypt-tls.ps1"
     "3_of_3" =  "/scripts/get-latest-letsencrypt-tls.ps1"
   }
+}
+
+variable "ad_directory_id" {
+  description = "The ID of the AD domain (if null the RD Gateway will NOT be joined to domain)"
+  type        = string
+  default     = null
+}
+
+variable "ad_dns_ips" {
+  description = "The IPs of the DNS servers for the AD domain"
+  type        = list(string)
+  default     = null
+}
+
+variable "ad_domain_fqdn" {
+  description = "The  fully qualified domain name of the AD domain, i.e. example.com"
+  type        = string
+  default     = null
 }

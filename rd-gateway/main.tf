@@ -164,8 +164,10 @@ resource "aws_instance" "rdgw" {
   }
 }
 
-# Template file for the SSM document.
+# Create template file for the SSM document if var.ad_directory_id is not null.
 data "template_file" "ssm_document" {
+  count = var.ad_directory_id == null ? 0 : 1
+  
   template = file("${path.module}/ssm-document.json.tpl")
 
   vars = {
@@ -176,17 +178,21 @@ data "template_file" "ssm_document" {
   }
 }
 
-# The SSM document.
+# Create the SSM document if var.ad_directory_id is not null.
 resource "aws_ssm_document" "main" {
+  count = var.ad_directory_id == null ? 0 : 1
+
   name          = "${var.ad_domain_fqdn}-domain-join"
   document_type = "Command"
 
-  content = data.template_file.ssm_document.rendered
+  content = data.template_file.ssm_document[0].rendered
 }
 
-# SSM association.
+# Create the SSM association if var.ad_directory_id is not null.
 resource "aws_ssm_association" "main" {
-  name = aws_ssm_document.main.name
+  count = var.ad_directory_id == null ? 0 : 1
+
+  name = aws_ssm_document.main[0].name
 
   targets {
     key    = "InstanceIds"

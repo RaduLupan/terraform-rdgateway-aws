@@ -92,15 +92,15 @@ data "template_file" "user_data" {
   vars = {
     region        = var.region
     computer_name = var.rdgw_name
-    
+
     s3_bucket     = var.s3_bucket
     s3_bucket_tls = var.s3_bucket_tls
     s3_folder_tls = var.s3_folder_tls
 
-    sqs_url       = var.sqs_url
-    script1       = var.scripts["1_of_3"]
-    script2       = var.scripts["2_of_3"]
-    script3       = var.scripts["3_of_3"]
+    sqs_url         = var.sqs_url
+    create_task_ps1 = var.scripts["create_task"]
+    renew_tls_ps1   = var.scripts["renew_tls"]
+    get_tls_ps1     = var.scripts["get_tls"]
   }
 }
 
@@ -121,7 +121,7 @@ resource "aws_iam_role" "main" {
   path = "/"
 
   assume_role_policy = data.template_file.ec2_role_trust.rendered
-  tags = local.common_tags
+  tags               = local.common_tags
 }
 
 # Template file for the EC2 instance role IAM policy.
@@ -167,7 +167,7 @@ resource "aws_instance" "rdgw" {
 # Create template file for the SSM document if var.ad_directory_id is not null.
 data "template_file" "ssm_document" {
   count = var.ad_directory_id == null ? 0 : 1
-  
+
   template = file("${path.module}/ssm-document.json.tpl")
 
   vars = {

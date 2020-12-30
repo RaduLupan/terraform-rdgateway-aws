@@ -39,16 +39,16 @@ else {
 
 # Download the Powershell scripts from S3 buket in the C:\scripts folder.
 if ($S3Bucket -ne $null) {
-    Read-S3Object -BucketName $S3Bucket -Key "${script1}" -File "C:${script1}" -Region $Region
-    Read-S3Object -BucketName $S3Bucket -Key "${script2}" -File "C:${script2}" -Region $Region
-    Read-S3Object -BucketName $S3Bucket -Key "${script3}" -File "C:${script3}" -Region $Region
+    Read-S3Object -BucketName $S3Bucket -Key "${create_task_ps1}" -File "C:${create_task_ps1}" -Region $Region
+    Read-S3Object -BucketName $S3Bucket -Key "${renew_tls_ps1}" -File "C:${renew_tls_ps1}" -Region $Region
+    Read-S3Object -BucketName $S3Bucket -Key "${get_tls_ps1}" -File "C:${get_tls_ps1}" -Region $Region
 }
 
 # Run script1: create-scheduled-task.ps1 to schedule the renew-letsencrypt-tls.ps1 script to run daily.
-Invoke-Expression "C:${script1} -Region $Region -S3Bucket $S3BucketTLS -SQSUrl $SQSUrl -psScript C:${script2}"
+Invoke-Expression "C:${create_task_ps1} -Region $Region -S3Bucket $S3BucketTLS -SQSUrl $SQSUrl -psScript C:${renew_tls_ps1}"
 
 # Run script1: create-scheduled-task.ps1 to schedule the get-latest-letsencrypt-tls.ps1 script to run at system startup.
-Invoke-Expression "C:${script1} -Region $Region -S3Bucket $S3BucketTLS -S3Folder $S3BucketFolderTLS -psScript C:${script3}"
+Invoke-Expression "C:${create_task_ps1} -Region $Region -S3Bucket $S3BucketTLS -S3Folder $S3BucketFolderTLS -psScript C:${get_tls_ps1}"
 
 # Install and configure RD Gateway feature.
 Install-WindowsFeature RDS-Gateway,RSAT-RDS-Gateway,RSAT-ADDS,RSAT-DNS-Server

@@ -146,8 +146,13 @@ resource "aws_iam_role_policy" "main" {
       {
         "Sid": "SSMAccess",
         "Action": [
-          "ssm:GetParameter",
-          "ssm:GetParameters"
+          "ssm:Get*",
+          "ssm:Describe*",
+          "ssm:List*",
+          "ssm:CreateAssociation",
+          "ssm:UpdateAssociationStatus",
+          "ssm:UpdateInstanceInformation",
+          "ssm:UpdateInstanceAssociationStatus"
         ],
         "Effect": "Allow",
         "Resource": "*"
@@ -165,6 +170,48 @@ resource "aws_iam_role_policy" "main" {
         "Action": [
           "sqs:DeleteMessage",
           "sqs:ReceiveMessage"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
+        "Sid": "EC2MessagesAccess",
+        "Action": [
+          "ec2messages:AcknowledgeMessage",
+          "ec2messages:DeleteMessage",
+          "ec2messages:FailMessage",
+          "ec2messages:GetEndpoint",
+          "ec2messages:GetMessages",
+          "ec2messages:SendReply"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
+        "Sid": "EC2Access",
+        "Action": [
+          "ec2:DescribeInstanceStatus"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
+        "Sid": "DSAccess",
+        "Action": [
+          "ds:CreateComputer",
+          "ds:DescribeDirectorie"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
+        "Sid": "CWLogsAccess",
+        "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents"
         ],
         "Effect": "Allow",
         "Resource": "*"
@@ -208,16 +255,27 @@ data "template_file" "ssm_document" {
   vars = {
     ad_directory_id = var.ad_directory_id
     ad_domain_fqdn  = var.ad_domain_fqdn
-    ad_dns_ips      = var.ad_dns_ips
+    ad_dns_ip1      = var.ad_dns_ips[0]
+    ad_dns_ip2      = var.ad_dns_ips[1]
   }
 }
 
 # The SSM document.
 resource "aws_ssm_document" "main" {
   name          = "rd-gateway-ssm-document"
-  document_type = "Automation"
+  document_type = "Command"
 
   content = data.template_file.ssm_document.rendered
+}
+
+# SSM association.
+resource "aws_ssm_association" "main" {
+  name = aws_ssm_document.main.name
+
+  targets {
+    key    = "InstanceIds"
+    values = [aws_instance.rdgw.id]
+  }
 }
 
 # Elastic IP.

@@ -6,7 +6,10 @@
         "properties": {
           "directoryId": "${ad_directory_id}",
           "directoryName": "${ad_domain_fqdn}",
-          "dnsIpAddresses": "${ad_dns_ips}"
+          "dnsIpAddresses": [
+              "${ad_dns_ip1}",
+              "${ad_dns_ip2}"
+          ]
         }
       }
     }

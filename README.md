@@ -8,3 +8,4 @@ The solution presented here uses [certbot](https://certbot.eff.org/about/) runni
 ## Quick start
 
 ## Credits
+Thank you [kingsoftgames](https://github.com/kingsoftgames/certbot-lambda) for your certbot-lambda implementation! I have found your code back in 2018 and have been running it at work ever since. Instead of manually renewing and installing the SSL certificates on a dozen RD Gateways we have in AWS, we have been receiving email notifications advising that the certificates have been renewed!

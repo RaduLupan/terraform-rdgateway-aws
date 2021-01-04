@@ -33,6 +33,16 @@
         "Resource": "*"
       },
       {
+        "Sid": "SNSAccess",
+        "Action": [
+          "sns:List*",
+          "sns:Get*",
+          "sns:Publish"
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      },
+      {
         "Sid": "EC2MessagesAccess",
         "Action": [
           "ec2messages:AcknowledgeMessage",

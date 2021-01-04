@@ -20,6 +20,8 @@ locals {
 
   rdgw_allowed_cidr = var.rdgw_allowed_cidr == null ? "0.0.0.0/0" : var.rdgw_allowed_cidr
 
+  sns_arn = var.sns_arn == null ? aws_sns_topic.main.arn : var.sns_arn
+
   common_tags = {
     terraform   = true
     environment = var.environment
@@ -101,6 +103,8 @@ data "template_file" "user_data" {
     create_task_ps1 = var.scripts["create_task"]
     renew_tls_ps1   = var.scripts["renew_tls"]
     get_tls_ps1     = var.scripts["get_tls"]
+
+    sns_arn = local.sns_arn  
   }
 }
 

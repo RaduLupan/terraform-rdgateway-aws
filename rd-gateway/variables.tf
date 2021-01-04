@@ -98,3 +98,9 @@ variable "ad_domain_fqdn" {
   type        = string
   default     = null
 }
+
+variable "sns_arn" {
+  description = "The ARN of an SNS topic to receive notifications of TLS certificate renewal (if null new SNS topic will be created)"
+  type        = string
+  default     = null
+}

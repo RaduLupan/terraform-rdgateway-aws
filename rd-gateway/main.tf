@@ -229,3 +229,8 @@ resource "aws_route53_record" "rdgw" {
   ttl     = "60"
   records = [aws_eip.main.public_ip]
 }
+
+# Create an SNS topic for renewal notifications.
+resource "aws_sns_topic" "main" {
+  name = "letsencrypt-tls-renewal"
+}

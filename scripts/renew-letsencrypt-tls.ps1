@@ -9,6 +9,8 @@ param (
     [string] $Region,
     [string] $SQSUrl,
     [string] $S3Bucket,
+    [string] $HostName,
+    [string] $SNSArn,
     [switch] $Install  
 )
 
@@ -75,6 +77,8 @@ if ($RenewalTime){
 
         # Cleanup $LocalPath folder.
         Remove-Item certificate.pfx,cert-private.pem,cert-public.pem -Force
+
+        Publish-SNSMessage -TopicArn $SNSArn -Message "$HostName TLS certificate has been renewed! Check it out at https://$HostName"
     }
 
     Set-Location $CurrentFolder    

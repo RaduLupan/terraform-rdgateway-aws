@@ -13,6 +13,8 @@ locals {
 
   rdp_port = 3389
 
+  host_name = "${var.rdgw_name}.${data.aws_route53_zone.selected[0].name}"
+
   ports_source_map = {
     "443"  = "0.0.0.0/0"
     "3389" = local.rdgw_allowed_cidr
@@ -104,7 +106,8 @@ data "template_file" "user_data" {
     renew_tls_ps1   = var.scripts["renew_tls"]
     get_tls_ps1     = var.scripts["get_tls"]
 
-    sns_arn = local.sns_arn  
+    sns_arn   = local.sns_arn 
+    host_name = local.host_name 
   }
 }
 
@@ -228,7 +231,7 @@ resource "aws_route53_record" "rdgw" {
   count = var.route53_public_zone == null ? 0 : 1
 
   zone_id = data.aws_route53_zone.selected[0].zone_id
-  name    = "${var.rdgw_name}.${data.aws_route53_zone.selected[0].name}"
+  name    = local.host_name
   type    = "A"
   ttl     = "60"
   records = [aws_eip.main.public_ip]

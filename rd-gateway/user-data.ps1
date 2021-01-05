@@ -4,6 +4,8 @@ $S3Bucket ="${s3_bucket}"
 $S3BucketTLS = "${s3_bucket_tls}"
 $S3BucketFolderTLS="${s3_folder_tls}"
 $SQSUrl = "${sqs_url}"
+$HostName = "${host_name}"
+$SNSArn = "${sns_arn}"
 
 Set-TimeZone -Name "Eastern Standard Time"
 
@@ -45,7 +47,7 @@ if ($S3Bucket -ne $null) {
 }
 
 # Run script1: create-scheduled-task.ps1 to schedule the renew-letsencrypt-tls.ps1 script to run daily.
-Invoke-Expression "C:${create_task_ps1} -Region $Region -S3Bucket $S3BucketTLS -SQSUrl $SQSUrl -HostName ${host_name} -SNSArn ${sns_arn} -psScript C:${renew_tls_ps1}"
+Invoke-Expression "C:${create_task_ps1} -Region $Region -S3Bucket $S3BucketTLS -SQSUrl $SQSUrl -HostName $HostName -SNSArn $SNSArn -psScript C:${renew_tls_ps1}"
 
 # Run script1: create-scheduled-task.ps1 to schedule the get-latest-letsencrypt-tls.ps1 script to run at system startup.
 Invoke-Expression "C:${create_task_ps1} -Region $Region -S3Bucket $S3BucketTLS -S3Folder $S3BucketFolderTLS -psScript C:${get_tls_ps1}"

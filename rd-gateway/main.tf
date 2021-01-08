@@ -22,7 +22,7 @@ locals {
 
   rdgw_allowed_cidr = var.rdgw_allowed_cidr == null ? "0.0.0.0/0" : var.rdgw_allowed_cidr
 
-  sns_arn = var.sns_arn == null ? aws_sns_topic.main.arn : var.sns_arn
+  sns_arn = var.sns_arn == null ? aws_sns_topic.main[0].arn : var.sns_arn
 
   common_tags = {
     terraform   = true
@@ -237,7 +237,32 @@ resource "aws_route53_record" "rdgw" {
   records = [aws_eip.main.public_ip]
 }
 
-# Create an SNS topic for renewal notifications.
+# Create an SNS topic for renewal notifications only if var.sns_arn is not null.
 resource "aws_sns_topic" "main" {
-  name = "letsencrypt-tls-renewal"
+  count = var.sns_arn == null ? 1 : 0
+
+  name = "rdgateway-notifications"
+}
+
+# CloudWatch alarm with EC2 action.
+resource "aws_cloudwatch_metric_alarm" "system" {
+  alarm_name                = "rdgateway-${aws_instance.rdgw.id}-high-status-check-failed-system"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "2"
+  metric_name               = "StatusCheckFailed_System"
+  namespace                 = "AWS/EC2"
+  period                    = "60"
+  statistic                 = "Maximum"
+  threshold                 = "1"
+  alarm_description         = "This metric monitors the EC2 System Status failures"
+  insufficient_data_actions = []
+ 
+  # This is not documented very well in Terraform docs, found it here:
+  # https://www.reddit.com/r/Terraform/comments/bekuo1/cloudwatch_alarm_for_instance_status/
+  dimensions = {
+      InstanceId = aws_instance.rdgw.id
+  }
+
+  # First action is clear: notify the the SNS topic, the second action however not so clear, got the arn from reddit but it works.
+  alarm_actions   = [local.sns_arn, "arn:aws:automate:${var.region}:ec2:recover"]
 }

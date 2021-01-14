@@ -1,8 +1,15 @@
+#----------------------------------------------------------------------------
+# REQUIRED PARAMETERS: You must provide a value for each of these parameters.
+#----------------------------------------------------------------------------
+
 variable "region" {
   description = "AWS Region"
   type        = string
-  default     = "us-west-2"
 }
+
+#---------------------------------------------------------------
+# OPTIONAL PARAMETERS: These parameters have resonable defaults.
+#---------------------------------------------------------------
 
 variable "environment" {
   description = "Environment i.e. dev, test, stage, prod"

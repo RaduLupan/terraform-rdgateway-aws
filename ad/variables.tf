@@ -1,3 +1,7 @@
+#----------------------------------------------------------------------------
+# REQUIRED PARAMETERS: You must provide a value for each of these parameters.
+#----------------------------------------------------------------------------
+
 variable "region" {
   description = "AWS Region"
   type        = string

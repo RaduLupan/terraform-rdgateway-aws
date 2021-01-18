@@ -106,8 +106,8 @@ data "template_file" "user_data" {
     renew_tls_ps1   = var.scripts["renew_tls"]
     get_tls_ps1     = var.scripts["get_tls"]
 
-    sns_arn   = local.sns_arn 
-    host_name = local.host_name 
+    sns_arn   = local.sns_arn
+    host_name = local.host_name
   }
 }
 
@@ -256,13 +256,13 @@ resource "aws_cloudwatch_metric_alarm" "system" {
   threshold                 = "1"
   alarm_description         = "This metric monitors the EC2 System Status failures"
   insufficient_data_actions = []
- 
+
   # This is not documented very well in Terraform docs, found it here:
   # https://www.reddit.com/r/Terraform/comments/bekuo1/cloudwatch_alarm_for_instance_status/
   dimensions = {
-      InstanceId = aws_instance.rdgw.id
+    InstanceId = aws_instance.rdgw.id
   }
 
   # First action is clear: notify the the SNS topic, the second action however not so clear, got the arn from reddit but it works.
-  alarm_actions   = [local.sns_arn, "arn:aws:automate:${var.region}:ec2:recover"]
+  alarm_actions = [local.sns_arn, "arn:aws:automate:${var.region}:ec2:recover"]
 }

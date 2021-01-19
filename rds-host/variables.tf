@@ -33,7 +33,7 @@ variable "rdsh_instance_type" {
   default     = "t3.small"
 }
 
-variable "rdgw_sg_id" {
+variable "rdgw_sg" {
   description = "The ID of the security group attached to the RD Gateway"
   type        = string
   default     = null

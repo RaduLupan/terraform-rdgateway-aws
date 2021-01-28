@@ -252,6 +252,7 @@ resource "aws_s3_bucket_notification" "letsencrypt_tls" {
 # Events rule that runs every 60 days.
 resource "aws_cloudwatch_event_rule" "letsencrypt_tls" {
   description = "Gets a new Letsencrypt TLS certificate every 60 days"
+  name        = "invoke-letsencrypt-certbot-lambda"
 
   schedule_expression = "rate(60 days)"
   is_enabled          = true

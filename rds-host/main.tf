@@ -120,5 +120,6 @@ data "template_file" "user_data" {
 
   vars = {
     computer_name = "rdsh01"
+    download_url  = var.download_url
   }
 }

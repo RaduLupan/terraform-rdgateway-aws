@@ -57,3 +57,9 @@ variable "ad_domain_fqdn" {
   type        = string
   default     = null
 }
+
+variable "download_url" {
+  description = "The URL for the Office Deployment Tool Click-to-Run installer"
+  type        = string
+  default     = "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_13530-20376.exe"
+}

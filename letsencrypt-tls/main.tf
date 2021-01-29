@@ -256,6 +256,8 @@ resource "aws_cloudwatch_event_rule" "letsencrypt_tls" {
 
   schedule_expression = "rate(60 days)"
   is_enabled          = true
+
+  tags = local.common_tags
 }
 
 # Template for lambda certbot input.

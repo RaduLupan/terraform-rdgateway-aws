@@ -53,6 +53,12 @@ variable "rdgw_instance_type" {
   default     = "t3.small"
 }
 
+variable "ami_id" {
+  description = "The ID of the AWS EC2 AMI to use (if null the latest Windows Server 2019 is selected)"
+  type        = string
+  default     = null
+}
+
 variable "rdgw_allowed_cidr" {
   description = "The allowed CIDR IP range for RDP access to the RD Gateway"
   type        = string

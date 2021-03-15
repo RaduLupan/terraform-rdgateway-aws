@@ -6,6 +6,9 @@ provider "aws" {
 locals {
   vpc_id = data.aws_subnet.selected.vpc_id
 
+  ami_id            = var.ami_id == null ? data.aws_ami.windows2019[0].id : var.ami_id
+  count_ami_win2019 = var.ami_id == null ? 1 : 0
+
   any_port     = 0
   any_protocol = "-1"
   tcp_protocol = "tcp"
@@ -26,6 +29,8 @@ data "aws_subnet" "selected" {
 
 # Use this data source to get the ID of a registered AMI for use in other resources.
 data "aws_ami" "windows2019" {
+  count = local.count_ami_win2019
+
   most_recent = true
 
   filter {
@@ -79,7 +84,7 @@ resource "aws_security_group_rule" "allow_all_outbound" {
 
 # RD Session Host EC2 instance.
 resource "aws_instance" "rdsh" {
-  ami           = data.aws_ami.windows2019.id
+  ami           = local.ami_id
   instance_type = var.rdsh_instance_type
 
   key_name               = var.key_name

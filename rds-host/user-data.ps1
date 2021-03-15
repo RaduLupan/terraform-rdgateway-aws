@@ -43,7 +43,7 @@ Invoke-Expression "$output /extract:C:\ODT /quiet"
 
 $configurationXML | Set-Content -Path C:\ODT\configuration.xml -Encoding Ascii
 
-Install-WindowsFeature RDS-RD-Server, RDS-Licensing, RSAT-RDS-Tools -IncludeManagementTools
+Install-WindowsFeature RDS-RD-Server, RSAT-RDS-Tools -IncludeManagementTools
 
 "C:\ODT\setup.exe /download configuration.xml" | Set-Content -Path "C:\ODT\Office365-Download.cmd"
 "C:\ODT\setup.exe /configure configuration.xml" | Set-Content -Path "C:\ODT\Office365-Install.cmd"

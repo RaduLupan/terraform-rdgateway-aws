@@ -17,6 +17,26 @@ variable "private_subnet_id" {
   type        = string
 }
 
+variable "rdgw_sg" {
+  description = "The ID of the security group attached to the RD Gateway"
+  type        = string
+}
+
+variable "ad_directory_id" {
+  description = "The ID of the AD domain (if null the RD Gateway will NOT be joined to domain)"
+  type        = string
+}
+
+variable "ad_dns_ips" {
+  description = "The IPs of the DNS servers for the AD domain"
+  type        = list(string)
+}
+
+variable "ad_domain_fqdn" {
+  description = "The  fully qualified domain name of the AD domain, i.e. example.com"
+  type        = string
+}
+
 #---------------------------------------------------------------
 # OPTIONAL PARAMETERS: These parameters have resonable defaults.
 #---------------------------------------------------------------
@@ -39,33 +59,8 @@ variable "ami_id" {
   default     = null
 }
 
-variable "rdgw_sg" {
-  description = "The ID of the security group attached to the RD Gateway"
-  type        = string
-  default     = null
-}
-
-
-variable "ad_directory_id" {
-  description = "The ID of the AD domain (if null the RD Gateway will NOT be joined to domain)"
-  type        = string
-  default     = null
-}
-
-variable "ad_dns_ips" {
-  description = "The IPs of the DNS servers for the AD domain"
-  type        = list(string)
-  default     = null
-}
-
-variable "ad_domain_fqdn" {
-  description = "The  fully qualified domain name of the AD domain, i.e. example.com"
-  type        = string
-  default     = null
-}
-
 variable "download_url" {
   description = "The URL for the Office Deployment Tool Click-to-Run installer"
   type        = string
-  default     = "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_13530-20376.exe"
+  default     = null
 }

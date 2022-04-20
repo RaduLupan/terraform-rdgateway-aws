@@ -11,6 +11,8 @@ Please check the [wiki](https://github.com/RaduLupan/terraform-rdgateway-aws/wik
 
 * [Amazon Web Services (AWS) account](http://aws.amazon.com/).
 * Terraform 0.13 installed on your computer. Check out HasiCorp [documentation](https://learn.hashicorp.com/terraform/azure/install) on how to install Terraform.
+* Registered Internet domain. Check out [Dot TK Registry](http://www.dot.tk) as they offer free .tk domains.
+* Git installed on your computer. Check out the [download](https://git-scm.com/downloads) page to get the package for your operating system.
 
 ## Quick start
 
